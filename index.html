@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="en">
+<meta charset="UTF-8">
+<title>Timer</title>
+
+<head>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Courier+Prime&display=swap');
+
+        html,
+        body {
+            height: 100vh;
+            width: 100vw;
+            padding: 0 0;
+            margin: 0 0;
+        }
+
+        body {
+            background-color: #deefb7;
+            color: #6c698d;
+            /* 6e6a6f
+            a3d9ff
+            040303 */
+        }
+
+        .wrapper {
+            height: 100%;
+            display: flex;
+            text-align: center;
+            justify-content: center;
+            flex-direction: column;
+        }
+
+        .inner-wrapper {
+            display: block;
+        }
+
+        .box {
+            background-color: #c5e0d8;
+            display: inline-block;
+            padding: 3em 5em 4em;
+            border-radius: 2em;
+        }
+
+        .time-left {
+            font-size: 8em;
+            font-family: 'Courier Prime', monospace;
+            font-weight: 600;
+        }
+
+        .buttons {}
+
+        .button {
+            display: inline-block;
+            background-color: #deefb7;
+            padding: 0.5em 2em 0.3em;
+            margin: 0 0.5em;
+            font-family: 'Courier Prime', monospace;
+            border-radius: 0.5em;
+            font-size: 1.5em;
+            cursor: pointer;
+            user-select: none;
+        }
+
+        .button:hover {
+            background-color: #d2e6a6;
+        }
+
+        .button-1 {}
+
+        .count-status {
+            font-family: 'Courier Prime', monospace;
+        }
+    </style>
+    <script>
+        let timerSounding = false;
+        let secondsRemaining = 0;
+        let secondsCounted = 0;
+        let currentInterval = -1;
+
+        function sendNotification() {
+            Notification.requestPermission((result) => {
+                console.log(result);
+            });
+            const text = "Time to move around!";
+            const notification = new Notification("Focus Timer", { body: text });
+        }
+
+        function playAlarm() {
+            document.getElementById("alarm-sound").play();
+        }
+
+        function updateTimer() {
+            let clock = document.getElementById("clock");
+            clock.innerText = formatTime(secondsRemaining);
+        }
+
+        function updateCountUp() {
+            let clock = document.getElementById("clock");
+            clock.innerText = formatTime(secondsCounted);
+        }
+
+        function finish() {
+            clearInterval(currentInterval);
+            playAlarm();
+            let ct = 0;
+            currentInterval = setInterval(() => {
+                playAlarm();
+                ct += 1;
+                if (ct > 120) {
+                    clearInterval(currentInterval);
+                    sendNotification();
+                }
+            }, 1000);
+            sendNotification();
+        }
+
+        function stop() {
+            clearInterval(currentInterval);
+        }
+
+        function startTimer(seconds) {
+            secondsRemaining = seconds;
+            clearInterval(currentInterval);
+
+            document.getElementById("count-status").innerText = "Counting down";
+            updateTimer();
+            currentInterval = setInterval(() => {
+                secondsRemaining -= 1;
+                updateTimer();
+                if (secondsRemaining <= 0) {
+                    finish();
+                }
+            }, 1000);
+        }
+
+        function startCountUp() {
+            document.getElementById("count-status").innerText = "Counting up";
+            clearInterval(currentInterval);
+            secondsCounted = 0;
+            updateCountUp();
+
+            currentInterval = setInterval(() => {
+                secondsCounted += 1;
+                updateCountUp();
+            }, 1000);
+        }
+
+        function formatTime(seconds) {
+            let minutes = Math.floor(seconds / 60);
+            if (minutes <= 0) {
+                minutes = "00";
+            } else if (minutes < 10) {
+                minutes = "0" + minutes;
+            }
+            let secondsRemainder = seconds % 60;
+            if (secondsRemainder < 10) {
+                return minutes + ":0" + secondsRemainder;
+            }
+            return minutes + ":" + secondsRemainder;
+        }
+    </script>
+</head>
+
+<body>
+    <!-- Game.img\LevelUp -->
+    <audio id="alarm-sound"
+        src="https://sounds.larry.science/sounds/33ABCF27F823429D429A7DC6C2C242567F2784434F2660C98C1BF3F9F4516CE5.mp3"
+        preload="auto"></audio>
+    <div class="wrapper">
+        <div class="inner-wrapper">
+            <div class="box">
+                <div class="count-status" id="count-status">
+                    Counting down
+                </div>
+                <div class="time-left" id="clock">
+                    00:00
+                </div>
+                <div class="buttons">
+                    <div class="button button-2" onclick="startCountUp()">
+                        Begin rest
+                    </div>
+                    <div class="button button-3" onclick="stop()">
+                        Stop Alarm
+                    </div>
+                    <br />
+                    <br />
+                    <div class="button button-1" onclick="startTimer(5*60)">
+                        Start 5:00
+                    </div>
+                    <div class="button button-1" onclick="startTimer(10*60)">
+                        Start 10:00
+                    </div>
+                    <div class="button button-1" onclick="startTimer(15*60)">
+                        Start 15:00
+                    </div>
+                    <div class="button button-1" onclick="startTimer(20*60)">
+                        Start 20:00
+                    </div>
+                    <div class="button button-1" onclick="startTimer(25*60)">
+                        Start 25:00
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>
