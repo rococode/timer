@@ -105,11 +105,11 @@
             let clock = document.getElementById("clock");
             clock.innerText = formatTime(secondsCounted);
 
-            let value = Math.floor(secondsRemaining / 60);
+            let value = Math.floor(secondsCounted / 60);
             if (value == 0) {
-                value = secondsRemaining;
+                value = secondsCounted;
             }
-            updateFavicon(Math.floor(secondsCounted / 60), "#c5e0d8", "#6c698d");
+            updateFavicon(value, "#3967ff", "#ffffff");
         }
 
         function updateFavicon(value, backgroundColor, foregroundColor) {
@@ -147,6 +147,9 @@
                     // change other icon
                     updateFavicon(0, "#ffa339", "#ffffff");
                 }
+                if (ct % 10 == 0) {
+                    sendNotification();
+                }
                 if (ct > 120) {
                     clearInterval(currentInterval);
                     sendNotification();
@@ -157,6 +160,10 @@
 
         function stop() {
             clearInterval(currentInterval);
+            document.getElementById("count-status").innerText = "Stopped";
+            document.getElementById("clock").innerText = formatTime(0);
+
+            updateFavicon(0, "#c5e0d8", "#6c698d");
         }
 
         function startTimer(seconds) {
@@ -221,7 +228,7 @@
         <div class="inner-wrapper">
             <div class="box">
                 <div class="count-status" id="count-status">
-                    Counting down
+                    Stopped
                 </div>
                 <div class="time-left" id="clock">
                     00:00
