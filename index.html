@@ -93,11 +93,44 @@
         function updateTimer() {
             let clock = document.getElementById("clock");
             clock.innerText = formatTime(secondsRemaining);
+
+            let value = Math.floor(secondsRemaining / 60);
+            if (value == 0) {
+                value = secondsRemaining;
+            }
+            updateFavicon(value, "#c5e0d8", "#6c698d");
         }
 
         function updateCountUp() {
             let clock = document.getElementById("clock");
             clock.innerText = formatTime(secondsCounted);
+
+            let value = Math.floor(secondsRemaining / 60);
+            if (value == 0) {
+                value = secondsRemaining;
+            }
+            updateFavicon(Math.floor(secondsCounted / 60), "#c5e0d8", "#6c698d");
+        }
+
+        function updateFavicon(value, backgroundColor, foregroundColor) {
+            var canvas = document.createElement('canvas');
+            canvas.width = 64;
+            canvas.height = 64;
+
+            var ctx = canvas.getContext('2d');
+            ctx.fillStyle = backgroundColor;
+            ctx.fillRect(0, 0, 64, 64);
+
+            ctx.fillStyle = foregroundColor;
+            ctx.font = "64px Courier Prime";
+            ctx.textAlign = "center";
+            ctx.textBaseline = "middle";
+            ctx.fillText(value + "", 32, 38);
+            var link = document.createElement('link');
+            link.type = 'image/x-icon';
+            link.rel = 'shortcut icon';
+            link.href = canvas.toDataURL("image/x-icon");
+            document.getElementsByTagName('head')[0].appendChild(link);
         }
 
         function finish() {
@@ -107,6 +140,13 @@
             currentInterval = setInterval(() => {
                 playAlarm();
                 ct += 1;
+                if (ct % 2 == 0) {
+                    // change icon
+                    updateFavicon(0, "#ff1f50", "#ffffff");
+                } else {
+                    // change other icon
+                    updateFavicon(0, "#ffa339", "#ffffff");
+                }
                 if (ct > 120) {
                     clearInterval(currentInterval);
                     sendNotification();
@@ -134,6 +174,12 @@
             }, 1000);
         }
 
+        function startCustomTimer() {
+            let input = document.getElementById("custom-amount");
+            let seconds = parseInt(input.value);
+            startTimer(seconds);
+        }
+
         function startCountUp() {
             document.getElementById("count-status").innerText = "Counting up";
             clearInterval(currentInterval);
@@ -159,6 +205,10 @@
             }
             return minutes + ":" + secondsRemainder;
         }
+
+        setTimeout(() => {
+            updateFavicon(0, "#c5e0d8", "#6c698d");
+        }, 500);
     </script>
 </head>
 
@@ -200,6 +250,10 @@
                     <div class="button button-1" onclick="startTimer(25*60)">
                         Start 25:00
                     </div>
+                    <div class="button button-1" onclick="startCustomTimer()">
+                        Start Custom
+                    </div>
+                    <input type="text" id="custom-amount" value="5" />
                 </div>
             </div>
         </div>
